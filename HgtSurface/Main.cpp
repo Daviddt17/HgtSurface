@@ -1,4 +1,9 @@
 #include <iostream>
+#include <GL/glew.h>
+#include <GL/freeglut.h>
+
+#include "LoadShaders.h"
+#include "vmath.h"
 #include "Hgt.h"
 
 using namespace std;

@@ -45,6 +45,8 @@ int Hgt::hgtLoader(const char* fileName, int heightBuffer[], int hgtArcType)
 		heightBuffer[heightCount] = (charBuffer[0] << 8) | charBuffer[1];
 		heightCount++;
 	}
+
+	return 0;
 }
 
 void Hgt::scaleHgtBuffer(int heightData[], int hgtArcType, float scaledDataBuffer[], int scale)
