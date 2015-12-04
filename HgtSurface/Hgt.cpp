@@ -1,6 +1,6 @@
 #include "Hgt.h"
 
-int Hgt::HgtLoader(const char* fileName, int heightBuffer[], int hgtArcType)
+int Hgt::hgtLoader(const char* fileName, int heightBuffer[], int hgtArcType)
 {
 	FILE *hgtFile;
 	int heightCount = 0;
@@ -44,5 +44,37 @@ int Hgt::HgtLoader(const char* fileName, int heightBuffer[], int hgtArcType)
 
 		heightBuffer[heightCount] = (charBuffer[0] << 8) | charBuffer[1];
 		heightCount++;
+	}
+}
+
+void Hgt::scaleHgtBuffer(int heightData[], int hgtArcType, float scaledDataBuffer[], int scale)
+{
+	int bufferSize = 0;
+
+	// Determine buffer size
+	if (hgtArcType == Hgt::ARC_TYPES::ONE_ARC)
+	{
+		bufferSize = 2 * ONE_ARC_SIZE;
+	}
+	else
+	{
+		bufferSize = 2 * THREE_ARC_SIZE;
+	}
+
+	// Scale data
+	for (int i = 0; i < bufferSize; ++i)
+	{
+		float scaled = 0;
+
+		if (heightData[i] >= 0)
+		{
+			scaled = float(heightData[i] * scale) / MAX_HEIGHT;
+		}
+		else
+		{
+			scaled = float(heightData[i] * -scale) / MIN_HEIGHT;
+		}
+		
+		scaledDataBuffer[i] = scaled;
 	}
 }

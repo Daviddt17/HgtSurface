@@ -4,6 +4,8 @@
 
 #define ONE_ARC_SIZE 1201
 #define THREE_ARC_SIZE 3601
+#define MAX_HEIGHT 32767
+#define MIN_HEIGHT -32768
 
 namespace Hgt 
 {
@@ -12,5 +14,6 @@ namespace Hgt
 		ONE_ARC, THREE_ARC
 	};
 
-	int HgtLoader(const char* fileName, int heightBuffer[], int hgtArcType);
+	int hgtLoader(const char* fileName, int heightBuffer[], int hgtArcType);
+	void scaleHgtBuffer(int heightData[], int hgtArcType, float scaledDataBuffer[], int scale);
 };
