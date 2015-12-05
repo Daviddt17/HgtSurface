@@ -17,7 +17,7 @@ using namespace std;
 GLuint vao[1];
 GLuint vbo[1];
 GLint modelLocation, viewLocation, projectionLocation, colorLocation;
-GLfloat rotateAngle = 0.0f;
+GLfloat planeAngle = 0.0f;
 GLfloat planeX = 0.0f;
 GLfloat planeY = 0.0f;
 GLfloat planeZ = 0.0f;
@@ -83,17 +83,22 @@ void buildPlane()
 void drawPlane()
 {
 	// Matrix stuff
-	vmath::mat4 modelTrans = vmath::scale(5.0f);
-	//modelTrans *= vmath::rotate(-55.0f, 1.0f, 0.0f, 0.0f);
-	modelTrans *= vmath::rotate(rotateAngle, 1.0f, 0.0f, 0.0f);
-	//modelTrans *= vmath::rotate(rotateGlobal, 0.0f, 0.0f, 1.0f);
-	//modelTrans *= vmath::translate(0.0f, 0.0f, -3.0f);
+	vmath::mat4 modelTrans = vmath::scale(3.0f);
+	modelTrans *= vmath::rotate(-55.0f, 1.0f, 0.0f, 0.0f);
+	modelTrans *= vmath::translate(planeX, planeY, planeZ);
+	modelTrans *= vmath::rotate(planeAngle, 0.0f, 0.0f, 1.0f);
 
-	vmath::mat4 projectionTrans = vmath::perspective(45.0f, 0.25f, 1.0f, 100.0f);
+	vmath::mat4 viewTrans = vmath::lookat(
+			vmath::vec3(0.0f, 0.0f, 1.0f), // camera
+			vmath::vec3(0.0f, 0.0f, 0.0f), // origin
+			vmath::vec3(0.0f, 1.0f, 0.0f)  // up
+		);
+
+	vmath::mat4 projectionTrans = vmath::perspective(45.0f, 0.5f, 0.1f, 100.0f);
 
 	glUniformMatrix4fv(modelLocation, 1, false, modelTrans);
-	glUniformMatrix4fv(viewLocation, 1, false, viewTransform);
-	glUniformMatrix4fv(projectionLocation, 1, false, viewTransform);
+	glUniformMatrix4fv(viewLocation, 1, false, viewTrans);
+	glUniformMatrix4fv(projectionLocation, 1, false, projectionTrans);
 	glUniform4f(colorLocation, 1.0, 0.0, 0.0, 1.0);
 
 	// Draw
@@ -163,8 +168,6 @@ void display()
 
 void timer(int value)
 {
-	rotateAngle += 1;
-
 	glutPostRedisplay();
 	glutTimerFunc(1000 / 30, timer, 1);
 }
@@ -173,6 +176,30 @@ void keypress(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
+		case 'r':
+			planeAngle += 0.1;
+			break;
+		default:
+			break;
+	}
+}
+
+void arrowKeypress(int key, int x, int y)
+{
+	switch (key)
+	{
+		case GLUT_KEY_UP:
+			planeY -= 0.001;
+			break;
+		case GLUT_KEY_DOWN:
+			planeY += 0.001;
+			break;
+		case GLUT_KEY_LEFT:
+			planeX += 0.001;
+			break;
+		case GLUT_KEY_RIGHT:
+			planeX -= 0.001;
+			break;
 		default:
 			break;
 	}
@@ -181,7 +208,7 @@ void keypress(unsigned char key, int x, int y)
 int main(int argc, char *argv[])
 {
 	// Load HGT
-	loadHgtData("N36W112.hgt");
+	loadHgtData("N41W081.hgt");
 	buildPlane();
 
 	// GL init
@@ -199,6 +226,7 @@ int main(int argc, char *argv[])
 
 	// Bind functions
 	glutKeyboardFunc(keypress);
+	glutSpecialFunc(arrowKeypress); // Need this for arrow keys
 	glutDisplayFunc(display);
 	glutTimerFunc(1000 / 30, timer, 1);
 
