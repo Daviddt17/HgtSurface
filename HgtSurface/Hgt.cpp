@@ -17,11 +17,11 @@ int Hgt::hgtLoader(const char* fileName, int heightBuffer[], int hgtArcType)
 	// Determine buffer size
 	if (hgtArcType == Hgt::ARC_TYPES::ONE_ARC)
 	{
-		bufferSize = 2 * ONE_ARC_SIZE;
+		bufferSize = ONE_ARC_SIZE * ONE_ARC_SIZE;
 	}
 	else
 	{
-		bufferSize = 2 * THREE_ARC_SIZE;
+		bufferSize = THREE_ARC_SIZE * THREE_ARC_SIZE;
 	}
 
 	// Load Hgt data
@@ -56,11 +56,11 @@ void Hgt::scaleHgtBuffer(int heightData[], int hgtArcType, float scaledDataBuffe
 	// Determine buffer size
 	if (hgtArcType == Hgt::ARC_TYPES::ONE_ARC)
 	{
-		bufferSize = 2 * ONE_ARC_SIZE;
+		bufferSize = ONE_ARC_SIZE * ONE_ARC_SIZE;
 	}
 	else
 	{
-		bufferSize = 2 * THREE_ARC_SIZE;
+		bufferSize = THREE_ARC_SIZE * THREE_ARC_SIZE;
 	}
 
 	// Scale data
