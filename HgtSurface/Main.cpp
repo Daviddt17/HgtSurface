@@ -17,16 +17,17 @@ using namespace std;
 GLuint vao[1];
 GLuint vbo[1];
 GLint modelLocation, viewLocation, projectionLocation, colorLocation;
-GLfloat planeAngle = 0.0f;
-GLfloat planeX = 0.0f;
-GLfloat planeY = 0.0f;
-GLfloat planeZ = 0.0f;
+GLfloat surfaceAngle = 0.0f;
+GLfloat surfaceX = 0.0f;
+GLfloat surfaceY = 0.0f;
+GLfloat surfaceZ = 0.0f;
+bool pointsEnabled = true;
 
 GLfloat triangles[NUM_TRIANGLES * 9];
 int heightData[HGT_SIZE * HGT_SIZE];
 float scaledHeightData[HGT_SIZE * HGT_SIZE];
 
-GLfloat viewTransform[16] = {
+GLfloat identity[16] = {
 	1.0f, 0.0f, 0.0f, 0.0f,
 	0.0f, 1.0f, 0.0f, 0.0f,
 	0.0f, 0.0f, 1.0f, 0.0f,
@@ -51,7 +52,7 @@ void buildPlane()
 			*/
 			// Triangle one
 			triangles[v++] = -1.0f + (2.0f * c) / (HGT_ROW_SIZE);		// x
-			triangles[v++] = 1.0f - (2.0f * r) / (HGT_ROW_SIZE);		// y							// z
+			triangles[v++] = 1.0f - (2.0f * r) / (HGT_ROW_SIZE);		// y
 			triangles[v++] = scaledHeightData[(HGT_ROW_SIZE * r) + c];	// z
 
 			triangles[v++] = -1.0f + (2.0f * (c + 1.0f)) / (HGT_ROW_SIZE);
@@ -83,17 +84,20 @@ void buildPlane()
 void drawPlane()
 {
 	// Matrix stuff
+	// Model
 	vmath::mat4 modelTrans = vmath::scale(3.0f);
 	modelTrans *= vmath::rotate(-55.0f, 1.0f, 0.0f, 0.0f);
-	modelTrans *= vmath::translate(planeX, planeY, planeZ);
-	modelTrans *= vmath::rotate(planeAngle, 0.0f, 0.0f, 1.0f);
+	//modelTrans *= vmath::rotate(surfaceAngle, surfaceX, surfaceY, 1.0f);
+	modelTrans *= vmath::translate(surfaceX, surfaceY, surfaceZ);
 
+	// View
 	vmath::mat4 viewTrans = vmath::lookat(
 			vmath::vec3(0.0f, 0.0f, 1.0f), // camera
 			vmath::vec3(0.0f, 0.0f, 0.0f), // origin
 			vmath::vec3(0.0f, 1.0f, 0.0f)  // up
 		);
 
+	// Projection
 	vmath::mat4 projectionTrans = vmath::perspective(45.0f, 0.5f, 0.1f, 100.0f);
 
 	glUniformMatrix4fv(modelLocation, 1, false, modelTrans);
@@ -103,7 +107,14 @@ void drawPlane()
 
 	// Draw
 	glBindVertexArray(vao[0]);
-	glDrawArrays(GL_POINTS, 0, NUM_TRIANGLES * 3);
+	if (pointsEnabled)
+	{
+		glDrawArrays(GL_POINTS, 0, NUM_TRIANGLES * 3);
+	}
+	else
+	{
+		glDrawArrays(GL_TRIANGLES, 0, NUM_TRIANGLES * 3);
+	}
 	glBindVertexArray(0);
 }
 
@@ -177,7 +188,10 @@ void keypress(unsigned char key, int x, int y)
 	switch (key)
 	{
 		case 'r':
-			planeAngle += 0.1;
+			surfaceAngle += 0.5;
+			break;
+		case 'p':
+			pointsEnabled = !pointsEnabled;
 			break;
 		default:
 			break;
@@ -189,16 +203,16 @@ void arrowKeypress(int key, int x, int y)
 	switch (key)
 	{
 		case GLUT_KEY_UP:
-			planeY -= 0.001;
+			surfaceY -= 0.005;
 			break;
 		case GLUT_KEY_DOWN:
-			planeY += 0.001;
+			surfaceY += 0.005;
 			break;
 		case GLUT_KEY_LEFT:
-			planeX += 0.001;
+			surfaceX += 0.005;
 			break;
 		case GLUT_KEY_RIGHT:
-			planeX -= 0.001;
+			surfaceX -= 0.005;
 			break;
 		default:
 			break;
@@ -222,6 +236,7 @@ int main(int argc, char *argv[])
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glewInit();
 
+	// My init
 	init();
 
 	// Bind functions

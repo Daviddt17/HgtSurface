@@ -1,6 +1,7 @@
 #include "Hgt.h"
 
 int Hgt::hgtLoader(const char* fileName, int heightBuffer[], int hgtArcType)
+// Loads height data into buffer
 {
 	FILE *hgtFile;
 	int heightCount = 0;
@@ -50,6 +51,7 @@ int Hgt::hgtLoader(const char* fileName, int heightBuffer[], int hgtArcType)
 }
 
 void Hgt::scaleHgtBuffer(int heightData[], int hgtArcType, float scaledDataBuffer[], int scale)
+// Scales height data fomr -scale to +scale
 {
 	int bufferSize = 0;
 
